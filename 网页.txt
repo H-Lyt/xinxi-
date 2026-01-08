@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>点击小方块游戏</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      text-align: center;
+    }
+    #gameArea {
+      position: relative;
+      width: 600px;
+      height: 400px;
+      margin: 20px auto;
+      background-color: #fff;
+      border: 2px solid #333;
+      overflow: hidden;
+    }
+    #target {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background-color: #ff4d4d;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    #target:hover {
+      transform: scale(1.1);
+    }
+    #score, #timer {
+      font-size: 24px;
+      margin: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>点击小方块游戏</h1>
+  <div id="score">得分: 0</div>
+  <div id="timer">时间: 10 秒</div>
+  <button onclick="startGame()">开始游戏</button>
+  <div id="gameArea"></div>
+
+  <script>
+    let score = 0;
+    let timeLeft = 10;
+    let gameActive = false;
+    let timer;
+    let moveTimer;
+
+    const gameArea = document.getElementById('gameArea');
+    const scoreDisplay = document.getElementById('score');
+    const timerDisplay = document.getElementById('timer');
+
+    function startGame() {
+      // 重置状态
+      score = 0;
+      timeLeft = 10;
+      gameActive = true;
+      scoreDisplay.textContent = '得分: 0';
+      timerDisplay.textContent = `时间: ${timeLeft} 秒`;
+
+      // 清空游戏区域
+      gameArea.innerHTML = '';
+
+      // 创建初始目标
+      createTarget();
+
+      // 启动倒计时
+      clearInterval(timer);
+      timer = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = `时间: ${timeLeft} 秒`;
+        if (timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+    }
+
+    function createTarget() {
+      const target = document.createElement('div');
+      target.id = 'target';
+
+      // 随机位置（确保不超出边界）
+      const maxX = gameArea.offsetWidth - 50;
+      const maxY = gameArea.offsetHeight - 50;
+      const x = Math.floor(Math.random() * maxX);
+      const y = Math.floor(Math.random() * maxY);
+
+      target.style.left = x + 'px';
+      target.style.top = y + 'px';
+
+      target.addEventListener('click', () => {
+        if (!gameActive) return;
+        score++;
+        scoreDisplay.textContent = `得分: ${score}`;
+        target.remove();
+        createTarget();
+      });
+
+      gameArea.appendChild(target);
+    }
+
+    function endGame() {
+      gameActive = false;
+      clearInterval(timer);
+      alert(`游戏结束！你的得分是：${score}`);
+    }
+  </script>
+</body>
+</html>
